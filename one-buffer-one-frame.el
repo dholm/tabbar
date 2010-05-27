@@ -989,5 +989,41 @@ The buffer contains unsaved changes which will be lost if you discard them now."
     ad-do-it))
 
 
+;; Commands
+
+(defun aquamacs-join-windows ()
+  "Join windows in selected or all frames.
+If selected frame contains more than one window, join the windows together.
+Otherwise, combine all other frames into selected frame."
+  (interactive)
+  (if tabbar-mode
+      (tabbar-window-merge-windows-in-frame)
+    (delete-other-windows)))
+
+(defun aquamacs-split-window-vertically ()
+  "Split window, select new window.
+Like `split-window-vertically' without further arguments, 
+but select the newly created window."
+  (interactive)
+  (select-window (split-window-vertically)))
+
+(defun raise-next-frame ()
+"Raise the next frame.
+See also `raise-previous-frame' and `other-frame'.
+An Aquamacs-only function."
+  (interactive)
+  (other-frame 1))
+
+(defun raise-previous-frame ()
+"Raise the previous frame.
+See also `raise-next-frame' and `other-frame'.
+An Aquamacs-only function."
+  (interactive)
+  (other-frame -1))
+
+(defun other-previous-window ()
+  "Like `next-window', but in the opposite direction."
+  (interactive)
+  (other-window -1))
 
 (provide 'one-buffer-one-frame)
