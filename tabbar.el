@@ -617,7 +617,6 @@ current cached copy."
 (defface tabbar-separator
   '((t
      :inherit tabbar-default
-     :height 0.1
      ))
   "Face used for separators between tabs."
   :group 'tabbar)
