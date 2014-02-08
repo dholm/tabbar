@@ -462,6 +462,11 @@ cleanup the cache."
   "Return non-nil if TAB is the selected tab in TABSET."
   (eq tab (tabbar-selected-tab tabset)))
 
+(defsubst tabbar-modified-p (tab tabset)
+  "Return non-nil if TAB is a modified tab in TABSET."
+  (and (buffer-modified-p (tabbar-tab-value tab))
+       (buffer-file-name (tabbar-tab-value tab))))
+
 (defvar tabbar--track-selected nil)
 
 (defsubst tabbar-select-tab (tab tabset)
@@ -605,6 +610,15 @@ current cached copy."
      :foreground "blue"
      ))
   "Face used for the selected tab."
+  :group 'tabbar)
+
+(defface tabbar-modified
+  '((t
+     :inherit tabbar-default
+     :box (:line-width 1 :color "white" :style released-button)
+     :foreground "green"
+     ))
+  "Face used for unsaved tabs."
   :group 'tabbar)
 
 (defface tabbar-highlight
@@ -1122,9 +1136,11 @@ Call `tabbar-tab-label-function' to obtain a label for TAB."
            'local-map (tabbar-make-tab-keymap tab)
            'help-echo 'tabbar-help-on-tab
            'mouse-face 'tabbar-highlight
-           'face (if (tabbar-selected-p tab (tabbar-current-tabset))
-                     'tabbar-selected
-                   'tabbar-unselected)
+           'face (cond ((tabbar-selected-p tab (tabbar-current-tabset))
+                        'tabbar-selected)
+                       ((tabbar-modified-p tab (tabbar-current-tabset))
+                        'tabbar-modified)
+                       (t 'tabbar-unselected))
            'pointer 'hand)
           tabbar-separator-value))
 
