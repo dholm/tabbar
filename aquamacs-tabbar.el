@@ -3,11 +3,27 @@
 ;;   Window Tabs by default: Tab-set is specific to each window, and tabbar
 ;;   is hidden when only a single tab exists for that window.
 
+;; This file is part of Aquamacs Emacs.
+
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as
+;; published by the Free Software Foundation; either version 3, or (at
+;; your option) any later version.
+
+;; This program is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;; General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program; see the file COPYING.  If not, write to
+;; the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+;; Floor, Boston, MA 02110-1301, USA.
+
+
 ;; Author: Nathaniel Cunningham <nathaniel.cunningham@gmail.com>
 ;; Maintainer: Nathaniel Cunningham <nathaniel.cunningham@gmail.com>
-;; Created: February 2008
-;; (C) Copyright 2008, the Aquamacs Project
-;; Revision: $Id: aquamacs-tabbar.el,v 1.53 2009/03/11 16:46:00 davidswelt Exp $
+;; (C) Copyright 2008, 2012, 2014: the Aquamacs Project
 
 ;; load original tabbar-mode
 
@@ -41,6 +57,13 @@
 			      (setq tool-bar-border tool-bar-border-saved
 				    tool-bar-border-saved nil)))
 
+;; used by tabbar-window-update-tabsets-when-idle
+(defmacro fast-screen-refresh (&rest code)
+  `(let ((tabbar-window-immediate-screen-fresh 
+	  (or tabbar-window-immediate-screen-fresh (interactive-p))))
+     ,@code
+     ))
+
 ;; improve tabbar-selected-tab such that it defaults to (tabbar-current-tabset)
 ;; if no tabset is passed
 (defsubst tabbar-selected-tab (&optional tabset)
@@ -70,8 +93,9 @@ argument is the MODE for the new buffer.")
 tabbar-close-tab-function.  Passes a single argument: the tab construct
 to be closed.  If no tab is specified, (tabbar-selected-tab) is used"
   (interactive)
-  (let ((thetab (or tab (tabbar-selected-tab))))
-    (funcall tabbar-close-tab-function thetab)))
+  (fast-screen-refresh
+    (let ((thetab (or tab (tabbar-selected-tab))))
+      (funcall tabbar-close-tab-function thetab))))
 
 
 ;; change faces for better-looking tabs (and more obvious selected tab!)
@@ -112,9 +136,10 @@ to be closed.  If no tab is specified, (tabbar-selected-tab) is used"
   :group 'tabbar)
 
 (defface tabbar-unselected-highlight '((t
-                    :foreground "black"
-		    :background "grey75"
-		    :box (:line-width 3 :color "grey75" :style nil)))
+                    ;; :foreground "black"
+		    ;; :background "grey75"
+		    ;; :box (:line-width 3 :color "grey75" :style nil)
+					))
   "Face for unselected, highlighted tabs."
   :group 'tabbar)
 
@@ -470,27 +495,27 @@ or groups.  Call the function `tabbar-button-label' otherwise."
         (cons "[-]" tabbar-home-button-disabled-image)))
 
 (setq tabbar-scroll-left-button-enabled-image
-  '((:type png :file "left.png")))
+  '((:type tiff :file "left.tiff")))
 
 (setq tabbar-scroll-left-button-disabled-image
-  '((:type png :file "left_disabled.png")))
+  '((:type tiff :file "left_disabled.tiff")))
 
 (setq tabbar-scroll-left-button
   (cons (cons " <" tabbar-scroll-left-button-enabled-image)
         (cons " =" tabbar-scroll-left-button-disabled-image)))
 
 (setq tabbar-scroll-right-button-enabled-image
-  '((:type png :file "right.png")))
+  '((:type tiff :file "right.tiff")))
 
 (setq tabbar-scroll-right-button-disabled-image
-  '((:type png :file "right_disabled.png")))
+  '((:type tiff :file "right_disabled.tiff")))
 
 (setq tabbar-scroll-right-button
   (cons (cons " >" tabbar-scroll-right-button-enabled-image)
         (cons " =" tabbar-scroll-right-button-disabled-image)))
 
 (setq tabbar-close-tab-button
-      '((:type png :file "close-tab.png")))
+      '((:type tiff :file "close-tab.tiff")))
 
 ;; allow fast-clicking through lists of tabs
 (defsubst tabbar-click-p (event)
@@ -830,30 +855,34 @@ buffer; see also `char-width'."
   "Creates a new tab.
 Turns on `tabbar-mode'."
   (interactive)
-  (tabbar-mode 1)
-  (tabbar-new-tab major-mode))
+  (fast-screen-refresh
+    (tabbar-mode 1)
+    (tabbar-new-tab major-mode)))
   
 (defun new-tab-or-buffer (&optional mode)
   "Calls tabbar-new-tab-function if tabbar-mode is on; otherwise,
 creates a new buffer.  Mode for new buffer can optionally be specified."
     (interactive)
   (if (and (boundp tabbar-mode) tabbar-mode)
-      (funcall tabbar-new-tab-function mode)
+       (fast-screen-refresh
+	(funcall tabbar-new-tab-function mode))
     (new-frame-with-new-scratch one-buffer-one-frame mode)))
 
 (defun next-tab-or-buffer ()
   "Call (tabbar-forward) if tabbar-mode is on; otherwise, call (next-buffer)."
   (interactive)
-  (if (and (boundp tabbar-mode) tabbar-mode)
-      (tabbar-forward)
-    (next-buffer)))
+  (fast-screen-refresh
+    (if (and (boundp tabbar-mode) tabbar-mode)
+	(tabbar-forward)
+      (next-buffer))))
 
 (defun previous-tab-or-buffer ()
   "Call (tabbar-forward) if tabbar-mode is on; otherwise, call (next-buffer)."
   (interactive)
-  (if (and (boundp tabbar-mode) tabbar-mode)
-      (tabbar-backward)
-    (previous-buffer)))
+  (fast-screen-refresh
+    (if (and (boundp tabbar-mode) tabbar-mode)
+	(tabbar-backward)
+      (previous-buffer))))
 
 ;;; Tabbar-Mwheel mode: redefine mwheel actions
 ;
@@ -901,6 +930,50 @@ The following options are available:
      nil)
    (define-key tabbar-mwheel-mode-map `[header-line (shift ,up)]
      nil)))
+
+
+(defun tabbar-order-tabs-by-file ()
+  (interactive)
+  (tabbar-order-by-fun 'tabbar--order-by-buffer-path))
+
+(defun tabbar-order-by-file-type ()
+  (interactive)
+  (tabbar-order-by-fun 'tabbar--order-by-file-type))
+
+(defun tabbar-reverse-tabs ()
+  (interactive)
+  (tabbar-order-by-fun 'reverse))
+
+(defun tabbar-order-by-fun (fun)
+  (let* ((tabset (tabbar-current-tabset)))
+    
+    (setf (symbol-value tabset)
+	  (funcall fun (tabbar-tabs tabset))))
+  (tabbar-window-update-tabsets)
+)
+
+(defun tabbar--order-by-buffer-path (list)
+  (sort list (lambda (a b)
+	       (string-lessp (tabbar--path a) (tabbar--path b))))
+)
+
+(defun tabbar--order-by-file-type (list)
+  (sort list (lambda (a b)
+	       (let* ((a (tabbar--path a)) (b (tabbar--path b))
+		      (ae (file-name-extension a))
+		      (be  (file-name-extension b)))
+		 (if (string= ae be)
+		     (string-lessp a b)
+		   (string-lessp ae be))))
+))
+
+(defun tabbar--path (el)
+  (let ((buffer (car el)))
+    (buffer-file-name buffer)))
+
+;; (symbol-value (tabbar-current-tabset))
+;; (tabbar-line-format (tabbar-get-tabset (number-to-string (window-number (selected-window)))))
+;; (tabbar-tabs                                (tabbar-current-tabset))
 
 ;; default tabbar behavior (buffer tabs grouped by major-mode) can be
 ;;  retained by setting tabbar-inhibit-window-tabs to non-nil
