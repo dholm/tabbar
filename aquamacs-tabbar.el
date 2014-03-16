@@ -12,6 +12,7 @@
 ;; load original tabbar-mode
 
 (require 'tabbar)
+(require 'aquamacs-compat)
 (require 'aquamacs-tools)
 
 
