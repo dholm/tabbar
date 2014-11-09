@@ -1623,7 +1623,9 @@ Returns non-nil if the new state is enabled.
   :global t
   :keymap tabbar-mwheel-mode-map
   (when tabbar-mwheel-mode
-    (unless (and mouse-wheel-mode tabbar-mode)
+    (unless (and (boundp 'mouse-wheel-mode)
+                 mouse-wheel-mode
+                 tabbar-mode)
       (tabbar-mwheel-mode -1))))
 
 (defun tabbar-mwheel-follow ()
