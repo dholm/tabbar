@@ -621,6 +621,15 @@ current cached copy."
   "Face used for unsaved tabs."
   :group 'tabbar)
 
+(defface tabbar-selected-modified
+  '((t
+     :inherit tabbar-default
+     :box (:line-width 1 :color "white" :style released-button)
+     :foreground "red"
+     ))
+  "Face used for unsaved and selected tabs."
+  :group 'tabbar)
+
 (defface tabbar-highlight
   '((t
      :underline t
@@ -1136,7 +1145,10 @@ Call `tabbar-tab-label-function' to obtain a label for TAB."
            'local-map (tabbar-make-tab-keymap tab)
            'help-echo 'tabbar-help-on-tab
            'mouse-face 'tabbar-highlight
-           'face (cond ((tabbar-selected-p tab (tabbar-current-tabset))
+           'face (cond ((and (tabbar-selected-p tab (tabbar-current-tabset))
+                             (tabbar-modified-p tab (tabbar-current-tabset)))
+                        'tabbar-selected-modified)
+                       ((tabbar-selected-p tab (tabbar-current-tabset))
                         'tabbar-selected)
                        ((tabbar-modified-p tab (tabbar-current-tabset))
                         'tabbar-modified)
