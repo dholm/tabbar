@@ -62,7 +62,7 @@ The return value is the incremented value of PLACE."
   (memq initial-window-system '(mac ns)))
 
 
-(defun aquamacs-ask-for-confirmation (text long &optional yes-button no-button sheet no-cancel)
+(defun aquamacs-ask-for-confirmation (text long &optional yes-button no-button sheet)
     (let ((f (window-frame (minibuffer-window))))
       (make-frame-visible f)
       (raise-frame f)			; make sure frame is visible
@@ -88,11 +88,8 @@ The return value is the incremented value of PLACE."
 	(let ((ret (x-popup-dialog (or sheet (if (mouse-event-p last-command-event) last-command-event)
 				        `(mouse-1      (,(selected-window) 100 (0 . 50) -1)))
 				    (list text
-					  `((,(or yes-button "Yes") . ?\r) . t) ; use \r instead of y until we have multi-keyEquivs
-					  (if no-cancel 'no-cancel 'cancel)
-					  `((,(or no-button "No") . ?n) . nil)))))
-	  (if (eq ret 'cancel)
-	      (keyboard-quit))
+					  `(,(or yes-button "Yes") . t)
+					  `(,(or no-button "No") . nil)))))
 	  ret))))
 
 
