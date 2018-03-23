@@ -1762,7 +1762,7 @@ Return the the first group where the current buffer is."
                               (funcall tabbar-buffer-groups-function)
                             '("Common")))))
               (and tabbar-buffer-list-function
-                   (funcall tabbar-buffer-list-function)))
+                   (tabbar-buffer-list)))
              #'(lambda (e1 e2)
                  (string-lessp (nth 1 e1) (nth 1 e2))))))
     ;; If the cache has changed, update the tab sets.
