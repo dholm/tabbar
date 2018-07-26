@@ -42,7 +42,7 @@
     (load "tabbar/tabbar.el")))
 
 (when (and (boundp 'tabbar-version)
-	   (not (equal "2.0" tabbar-version)))
+	   (not (equal "2.1" tabbar-version)))
   (message "Warning: possibly incompatible tabbar version installed in %s."
 	   (locate-library "tabbar")))
 
