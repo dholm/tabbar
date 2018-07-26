@@ -7,10 +7,10 @@
 ;; Maintainer: David Ponce <david@dponce.com>
 ;; Created: 25 February 2003
 ;; Keywords: convenience
-;; Version: 2.1
+;; Version: 2.2
 ;; Revision: $Id: tabbar.el,v 1.7 2009/03/02 21:02:34 davidswelt Exp $
 
-(defconst tabbar-version "2.1")
+(defconst tabbar-version "2.2")
 
 ;; This file is not part of GNU Emacs.
 
