@@ -1887,7 +1887,7 @@ mouse-2: pop to buffer, mouse-3: delete other windows"
      ((eq mouse-button 'mouse-3)
       (delete-other-windows))
      (t
-      (switch-to-buffer buffer)))
+      (switch-to-buffer buffer nil t)))
     ;; Don't show groups.
     (tabbar-buffer-show-groups nil)
     ))
@@ -1934,7 +1934,7 @@ first."
                     (buffer-live-p sibling))
            ;; Move sibling buffer in front of the buffer list.
            (save-current-buffer
-             (switch-to-buffer sibling))))))
+             (switch-to-buffer sibling nil t))))))
 
 ;;; Tab bar buffer setup
 ;;
